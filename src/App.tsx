@@ -38,6 +38,8 @@ function App() {
   )
   const bookRef = useRef<any>(null)
   const bookWrapperRef = useRef<HTMLDivElement>(null)
+  const isFlippingRef = useRef(false)
+  const measureRef = useRef<() => void>(() => {})
   const [bookBox, setBookBox] = useState<{
     left: number
     width: number
@@ -73,6 +75,14 @@ function App() {
     if (!wrapper) return
 
     function measure() {
+      // react-pageflip restructures the DOM continuously while a page is
+      // mid-flip (curling page, temporary extra items), which makes the
+      // "which .stf__item is visible" signal unreliable for that brief
+      // window. Rather than chase it and have the shadow flicker/vanish,
+      // freeze at the last good position and only re-measure once the
+      // flip settles (see the onChangeState handler below).
+      if (isFlippingRef.current) return
+
       const wrapperRect = wrapper!.getBoundingClientRect()
       const visible = Array.from(
         wrapper!.querySelectorAll<HTMLElement>('.stf__item'),
@@ -91,6 +101,7 @@ function App() {
       })
     }
 
+    measureRef.current = measure
     measure()
     const resizeObserver = new ResizeObserver(measure)
     resizeObserver.observe(wrapper)
@@ -151,6 +162,10 @@ function App() {
           showCover={true}
           className="mx-auto"
           style={{}}
+          onChangeState={(e: any) => {
+            isFlippingRef.current = e.data !== 'read'
+            if (!isFlippingRef.current) measureRef.current()
+          }}
         >
           <CoverPage />
           {pieces.map((piece, i) => (
