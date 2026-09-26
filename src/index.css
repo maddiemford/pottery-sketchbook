@@ -13,7 +13,7 @@ body,
 body {
   margin: 0;
   font-family: 'Georgia', 'Iowan Old Style', serif;
-  background: #d9cdbb;
+  background: #3a2c22;
 }
 
 /* ruled notebook paper: horizontal lines + a left margin rule */
@@ -48,4 +48,11 @@ body {
     rgba(0, 0, 0, 0.22) 62%,
     transparent 100%
   );
+}
+
+/* A lone hard cover (front or back) can render in either slot depending on
+   page parity — react-pageflip tags its own root with --left/--right. Mirror
+   the spine strip to match so it's always on the true binding edge. */
+.stf__item.--left .cover-content-row {
+  flex-direction: row-reverse;
 }

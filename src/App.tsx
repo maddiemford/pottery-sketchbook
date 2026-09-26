@@ -42,18 +42,27 @@ function App() {
     left: number
     width: number
     pageCount: number
-  }>({ left: 0, width: 0, pageCount: 0 })
+    singleItemIsLeftSlot: boolean
+  }>({ left: 0, width: 0, pageCount: 0, singleItemIsLeftSlot: false })
 
   // react-pageflip keeps a full two-slot container even when only a single
   // hard cover is showing, so the spine can't be positioned from that
   // container's own box. Instead, take the union of whichever `.stf__item`
   // page elements are actually visible (their rect collapses to 0 when
-  // off-screen) — one item means a single page (spine at its left edge),
-  // two means a spread (spine in the middle).
+  // off-screen) — one item means a single page, two means a spread (spine
+  // in the middle). For a single page, react-pageflip can render it in
+  // either the "left" or "right" slot depending on page parity, and the
+  // true spine is always on the OUTER edge (away from where a second page
+  // would sit) — so left-slot pages get the spine on their right, and
+  // right-slot (or unpaired) pages get it on their left. This matches the
+  // `.cover-content-row` flip in index.css so the strip and shadow agree.
+  const GUTTER_WIDTH = 26
   const gutterLeft =
     bookBox.pageCount === 2
-      ? bookBox.left + bookBox.width / 2 - 13
-      : bookBox.left
+      ? bookBox.left + bookBox.width / 2 - GUTTER_WIDTH / 2
+      : bookBox.singleItemIsLeftSlot
+        ? bookBox.left + bookBox.width - GUTTER_WIDTH
+        : bookBox.left
 
   useEffect(() => {
     savePieces(pieces)
@@ -65,16 +74,21 @@ function App() {
 
     function measure() {
       const wrapperRect = wrapper!.getBoundingClientRect()
-      const rects = Array.from(
+      const visible = Array.from(
         wrapper!.querySelectorAll<HTMLElement>('.stf__item'),
-      )
-        .map((el) => el.getBoundingClientRect())
-        .filter((r) => r.width > 0)
-      if (rects.length === 0) return
+      ).filter((el) => el.getBoundingClientRect().width > 0)
+      if (visible.length === 0) return
 
+      const rects = visible.map((el) => el.getBoundingClientRect())
       const left = Math.min(...rects.map((r) => r.left)) - wrapperRect.left
       const right = Math.max(...rects.map((r) => r.right)) - wrapperRect.left
-      setBookBox({ left, width: right - left, pageCount: rects.length })
+      setBookBox({
+        left,
+        width: right - left,
+        pageCount: visible.length,
+        singleItemIsLeftSlot:
+          visible.length === 1 && visible[0].classList.contains('--left'),
+      })
     }
 
     measure()
@@ -116,14 +130,11 @@ function App() {
   const firingTargetPiece = pieces.find((p) => p.id === firingForPieceId)
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-[#d9cdbb] px-4 py-6">
-      <header className="mb-6 flex w-full max-w-3xl items-center justify-between">
-        <h1 className="font-serif text-xl text-stone-800 sm:text-2xl">
-          🏺 Pottery Sketchbook
-        </h1>
+    <div className="flex min-h-screen flex-col items-center bg-[#3a2c22] px-4 py-6">
+      <header className="mb-6 flex w-full max-w-3xl items-center justify-end">
         <button
           onClick={() => setShowNewPiece(true)}
-          className="rounded-full bg-stone-800 px-4 py-2 text-sm font-medium text-white hover:bg-stone-700"
+          className="rounded-full bg-[#c1583c] px-4 py-2 text-sm font-medium text-white hover:bg-[#a8492f]"
         >
           + New piece
         </button>
