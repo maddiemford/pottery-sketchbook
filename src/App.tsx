@@ -38,20 +38,21 @@ function App() {
   )
   const bookRef = useRef<any>(null)
   const bookWrapperRef = useRef<HTMLDivElement>(null)
-  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>(
-    'landscape',
-  )
-  const [currentPage, setCurrentPage] = useState(0)
-  const [bookBox, setBookBox] = useState<{ left: number; width: number }>({
-    left: 0,
-    width: 0,
-  })
+  const [bookBox, setBookBox] = useState<{
+    left: number
+    width: number
+    pageCount: number
+  }>({ left: 0, width: 0, pageCount: 0 })
 
-  const totalPages = pieces.length + 2 // + front and back cover
-  const onCoverPage = currentPage === 0 || currentPage === totalPages - 1
+  // react-pageflip keeps a full two-slot container even when only a single
+  // hard cover is showing, so the spine can't be positioned from that
+  // container's own box. Instead, take the union of whichever `.stf__item`
+  // page elements are actually visible (their rect collapses to 0 when
+  // off-screen) — one item means a single page (spine at its left edge),
+  // two means a spread (spine in the middle).
   const spiralLeft =
-    orientation === 'landscape'
-      ? bookBox.left + bookBox.width / 2 - 15
+    bookBox.pageCount === 2
+      ? bookBox.left + bookBox.width / 2 - 17
       : bookBox.left
 
   useEffect(() => {
@@ -63,21 +64,33 @@ function App() {
     if (!wrapper) return
 
     function measure() {
-      const bookEl = wrapper!.querySelector<HTMLElement>('.stf__parent')
-      if (!bookEl) return
       const wrapperRect = wrapper!.getBoundingClientRect()
-      const bookRect = bookEl.getBoundingClientRect()
-      setBookBox({
-        left: bookRect.left - wrapperRect.left,
-        width: bookRect.width,
-      })
+      const rects = Array.from(
+        wrapper!.querySelectorAll<HTMLElement>('.stf__item'),
+      )
+        .map((el) => el.getBoundingClientRect())
+        .filter((r) => r.width > 0)
+      if (rects.length === 0) return
+
+      const left = Math.min(...rects.map((r) => r.left)) - wrapperRect.left
+      const right = Math.max(...rects.map((r) => r.right)) - wrapperRect.left
+      setBookBox({ left, width: right - left, pageCount: rects.length })
     }
 
     measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(wrapper)
-    return () => observer.disconnect()
-  }, [pieces.length, orientation])
+    const resizeObserver = new ResizeObserver(measure)
+    resizeObserver.observe(wrapper)
+    const mutationObserver = new MutationObserver(measure)
+    mutationObserver.observe(wrapper, {
+      attributes: true,
+      attributeFilter: ['style', 'class'],
+      subtree: true,
+    })
+    return () => {
+      resizeObserver.disconnect()
+      mutationObserver.disconnect()
+    }
+  }, [pieces.length])
 
   function handleCreatePiece(piece: Piece) {
     setPieces((prev) => [...prev, piece])
@@ -127,12 +140,6 @@ function App() {
           showCover={true}
           className="mx-auto"
           style={{}}
-          onInit={(e: any) => {
-            setCurrentPage(e.data.page)
-            setOrientation(e.data.mode)
-          }}
-          onFlip={(e: any) => setCurrentPage(e.data)}
-          onChangeOrientation={(e: any) => setOrientation(e.data)}
         >
           <CoverPage />
           {pieces.map((piece, i) => (
@@ -145,9 +152,7 @@ function App() {
           ))}
           <BackCoverPage onAddPiece={() => setShowNewPiece(true)} />
         </HTMLFlipBook>
-        {!onCoverPage && bookBox.width > 0 && (
-          <SpiralBinding left={spiralLeft} />
-        )}
+        {bookBox.width > 0 && <SpiralBinding left={spiralLeft} />}
       </div>
 
       {showNewPiece && (
