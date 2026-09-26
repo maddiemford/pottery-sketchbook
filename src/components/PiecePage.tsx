@@ -21,9 +21,7 @@ export const PiecePage = forwardRef<HTMLDivElement, PiecePageProps>(
   ({ piece, pageNumber, onAddFiring }, ref) => {
     return (
       <PageShell ref={ref} pageNumber={pageNumber}>
-        <h2 className="font-serif text-xl text-stone-800 sm:text-2xl">
-          {piece.title}
-        </h2>
+        <h2 className="text-2xl text-stone-800 sm:text-3xl">{piece.title}</h2>
         <p className="mt-1 text-xs text-stone-500">{piece.createdAt}</p>
 
         {piece.sketchImageUrl ? (

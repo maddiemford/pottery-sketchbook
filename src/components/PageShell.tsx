@@ -11,7 +11,7 @@ export const PageShell = forwardRef<HTMLDivElement, PageShellProps>(
     return (
       <div
         ref={ref}
-        className={`paper-page flex h-full w-full flex-col overflow-y-auto border border-stone-300 py-5 pr-5 pl-8 shadow-inner sm:py-8 sm:pr-8 sm:pl-8 ${className}`}
+        className={`paper-page paper-noise flex h-full w-full flex-col overflow-y-auto border border-stone-300 py-5 pr-5 pl-8 shadow-inner sm:py-8 sm:pr-8 sm:pl-8 ${className}`}
       >
         <div className="flex-1">{children}</div>
         {pageNumber !== undefined && (

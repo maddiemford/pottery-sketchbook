@@ -16,18 +16,30 @@ body {
   background: #3a2c22;
 }
 
-/* ruled notebook paper: horizontal lines + a left margin rule */
+/* fine paper grain, layered over whatever background-color the element
+   already has (kraft cover or notebook page). Note: this sets
+   `background-image`, which a Tailwind gradient utility on the same
+   element would silently clobber (or be clobbered by) since both target
+   the same property — combine them in one declaration instead of stacking
+   this class on top of a `bg-gradient-*` utility. */
+.paper-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
 .paper-page {
   background-color: #fdfaf3;
+  font-family: 'Patrick Hand', cursive;
+}
+
+/* the spine strip needs both the orange gradient and the paper grain, and
+   since they'd otherwise fight over `background-image`, they're combined
+   in one rule instead of a Tailwind gradient utility + .paper-noise */
+.spine-strip {
   background-image:
-    linear-gradient(rgba(90, 120, 170, 0.16) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(210, 80, 90, 0.25) 1px, transparent 1px);
-  background-size:
-    100% 28px,
-    100% 100%;
-  background-position:
-    0 6px,
-    44px 0;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(to right, #a8492f, #c1583c);
+  background-repeat: repeat, no-repeat;
 }
 
 /* shadow of the spine's gutter/valley, running the full height at either
