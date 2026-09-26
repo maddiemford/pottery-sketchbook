@@ -5,6 +5,7 @@ import { BackCoverPage } from './components/BackCoverPage'
 import { CoverPage } from './components/CoverPage'
 import { NewPieceModal } from './components/NewPieceModal'
 import { PiecePage } from './components/PiecePage'
+import { SpiralBinding } from './components/SpiralBinding'
 import { loadPieces, savePieces } from './data/storage'
 import type { Firing, Piece } from './types/piece'
 
@@ -36,10 +37,47 @@ function App() {
     null,
   )
   const bookRef = useRef<any>(null)
+  const bookWrapperRef = useRef<HTMLDivElement>(null)
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>(
+    'landscape',
+  )
+  const [currentPage, setCurrentPage] = useState(0)
+  const [bookBox, setBookBox] = useState<{ left: number; width: number }>({
+    left: 0,
+    width: 0,
+  })
+
+  const totalPages = pieces.length + 2 // + front and back cover
+  const onCoverPage = currentPage === 0 || currentPage === totalPages - 1
+  const spiralLeft =
+    orientation === 'landscape'
+      ? bookBox.left + bookBox.width / 2 - 15
+      : bookBox.left
 
   useEffect(() => {
     savePieces(pieces)
   }, [pieces])
+
+  useEffect(() => {
+    const wrapper = bookWrapperRef.current
+    if (!wrapper) return
+
+    function measure() {
+      const bookEl = wrapper!.querySelector<HTMLElement>('.stf__parent')
+      if (!bookEl) return
+      const wrapperRect = wrapper!.getBoundingClientRect()
+      const bookRect = bookEl.getBoundingClientRect()
+      setBookBox({
+        left: bookRect.left - wrapperRect.left,
+        width: bookRect.width,
+      })
+    }
+
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(wrapper)
+    return () => observer.disconnect()
+  }, [pieces.length, orientation])
 
   function handleCreatePiece(piece: Piece) {
     setPieces((prev) => [...prev, piece])
@@ -78,28 +116,39 @@ function App() {
         </button>
       </header>
 
-      <HTMLFlipBook
-        {...flipBookDefaults}
-        ref={bookRef}
-        width={360}
-        height={520}
-        size="stretch"
-        usePortrait={true}
-        showCover={true}
-        className="mx-auto"
-        style={{}}
-      >
-        <CoverPage />
-        {pieces.map((piece, i) => (
-          <PiecePage
-            key={piece.id}
-            piece={piece}
-            pageNumber={i + 1}
-            onAddFiring={setFiringForPieceId}
-          />
-        ))}
-        <BackCoverPage onAddPiece={() => setShowNewPiece(true)} />
-      </HTMLFlipBook>
+      <div ref={bookWrapperRef} className="relative w-full max-w-3xl">
+        <HTMLFlipBook
+          {...flipBookDefaults}
+          ref={bookRef}
+          width={360}
+          height={520}
+          size="stretch"
+          usePortrait={true}
+          showCover={true}
+          className="mx-auto"
+          style={{}}
+          onInit={(e: any) => {
+            setCurrentPage(e.data.page)
+            setOrientation(e.data.mode)
+          }}
+          onFlip={(e: any) => setCurrentPage(e.data)}
+          onChangeOrientation={(e: any) => setOrientation(e.data)}
+        >
+          <CoverPage />
+          {pieces.map((piece, i) => (
+            <PiecePage
+              key={piece.id}
+              piece={piece}
+              pageNumber={i + 1}
+              onAddFiring={setFiringForPieceId}
+            />
+          ))}
+          <BackCoverPage onAddPiece={() => setShowNewPiece(true)} />
+        </HTMLFlipBook>
+        {!onCoverPage && bookBox.width > 0 && (
+          <SpiralBinding left={spiralLeft} />
+        )}
+      </div>
 
       {showNewPiece && (
         <NewPieceModal

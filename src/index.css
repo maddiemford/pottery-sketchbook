@@ -16,10 +16,55 @@ body {
   background: #d9cdbb;
 }
 
-/* subtle paper texture for notebook pages */
+/* ruled notebook paper: horizontal lines + a left margin rule */
 .paper-page {
   background-color: #fdfaf3;
   background-image:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: 100% 32px;
+    linear-gradient(rgba(90, 120, 170, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(210, 80, 90, 0.25) 1px, transparent 1px);
+  background-size:
+    100% 28px,
+    100% 100%;
+  background-position:
+    0 6px,
+    44px 0;
+}
+
+/* metal coil binding running down the gutter (or left edge on a single page) */
+.spiral-binding {
+  width: 30px;
+}
+
+.spiral-binding::before {
+  /* shadow of the gutter / valley the coil sits in */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.16) 38%,
+    rgba(0, 0, 0, 0.22) 50%,
+    rgba(0, 0, 0, 0.16) 62%,
+    transparent 100%
+  );
+}
+
+.spiral-binding::after {
+  /* the rings themselves, tiled vertically */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-y;
+  background-position: center top;
+  background-size: 100% 26px;
+  background-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0 4px,
+    #4b4842 4px 5.5px,
+    #b7b3a9 5.5px 6.5px,
+    #2f2d29 6.5px 7.5px,
+    transparent 7.5px 100%
+  );
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
