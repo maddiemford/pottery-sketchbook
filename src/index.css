@@ -30,14 +30,13 @@ body {
     44px 0;
 }
 
-/* discbound-style coil running the full spine: visible over covers and
-   interior pages alike, at the gutter (spread) or left edge (single page) */
-.spiral-binding {
-  width: 34px;
+/* shadow of the spine's gutter/valley, running the full height at either
+   the gutter (two-page spread) or the left edge (single page) */
+.gutter-shadow {
+  width: 26px;
 }
 
-.spiral-binding::before {
-  /* shadow of the gutter / valley the coil sits in */
+.gutter-shadow::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -49,33 +48,4 @@ body {
     rgba(0, 0, 0, 0.22) 62%,
     transparent 100%
   );
-}
-
-.spiral-binding::after {
-  /* the rings themselves, tiled vertically. Shaped as wide ellipses (loops
-     viewed at an angle) with the hole reading as recessed into the page:
-     bright rim closest to the viewer, darkening toward the outer edge as
-     the wire curves away and disappears behind the paper. */
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-repeat: repeat-y;
-  background-position: center top;
-  background-size: 100% 34px;
-  background-image:
-    radial-gradient(
-      ellipse 5px 3px at 40% 38%,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.15) 60%,
-      transparent 100%
-    ),
-    radial-gradient(
-      ellipse 16px 10px at 50% 50%,
-      transparent 0% 52%,
-      #ded7c6 52% 64%,
-      #6f6a5f 64% 80%,
-      #14110d 80% 95%,
-      transparent 100%
-    );
-  filter: drop-shadow(0 1.5px 1.5px rgba(0, 0, 0, 0.45));
 }

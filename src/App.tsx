@@ -4,8 +4,8 @@ import { AddFiringModal } from './components/AddFiringModal'
 import { BackCoverPage } from './components/BackCoverPage'
 import { CoverPage } from './components/CoverPage'
 import { NewPieceModal } from './components/NewPieceModal'
+import { GutterShadow } from './components/GutterShadow'
 import { PiecePage } from './components/PiecePage'
-import { SpiralBinding } from './components/SpiralBinding'
 import { loadPieces, savePieces } from './data/storage'
 import type { Firing, Piece } from './types/piece'
 
@@ -50,9 +50,9 @@ function App() {
   // page elements are actually visible (their rect collapses to 0 when
   // off-screen) — one item means a single page (spine at its left edge),
   // two means a spread (spine in the middle).
-  const spiralLeft =
+  const gutterLeft =
     bookBox.pageCount === 2
-      ? bookBox.left + bookBox.width / 2 - 17
+      ? bookBox.left + bookBox.width / 2 - 13
       : bookBox.left
 
   useEffect(() => {
@@ -152,7 +152,7 @@ function App() {
           ))}
           <BackCoverPage onAddPiece={() => setShowNewPiece(true)} />
         </HTMLFlipBook>
-        {bookBox.width > 0 && <SpiralBinding left={spiralLeft} />}
+        {bookBox.width > 0 && <GutterShadow left={gutterLeft} />}
       </div>
 
       {showNewPiece && (
