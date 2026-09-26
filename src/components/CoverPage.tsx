@@ -13,9 +13,6 @@ export const CoverPage = forwardRef<HTMLDivElement>((_props, ref) => {
         <div className="h-full w-8 flex-shrink-0 bg-gradient-to-r from-[#a8492f] to-[#c1583c] sm:w-10" />
         <div className="flex flex-1 flex-col items-center justify-center p-6 text-center text-stone-800 sm:p-8">
           <ScrapbookTitle text="Pottery Sketchbook" />
-          <p className="mt-4 text-sm text-stone-600">
-            Sketches, clay bodies, firings &amp; glazes
-          </p>
         </div>
       </div>
     </div>
