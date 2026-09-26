@@ -1,11 +1,11 @@
 const PALETTE = [
-  '#c1583c', // orange, matches the spine
-  '#2b2d42', // navy
-  '#6b4226', // brown
-  '#3d5a80', // slate blue
-  '#7a4419', // rust
-  '#4a5759', // charcoal green
-  '#8c3b4a', // maroon
+  '#f2545b', // lobster pink
+  '#4b4a67', // vintage grape, matches the spine
+  '#537a5a', // fern
+  '#312509', // deep walnut
+  '#8f8fa0', // pale slate, darkened for contrast with the text
+  '#c73f47', // darker pink
+  '#3a3950', // darker grape
 ]
 
 const FONTS = [

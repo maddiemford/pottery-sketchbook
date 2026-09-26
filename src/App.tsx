@@ -141,11 +141,11 @@ function App() {
   const firingTargetPiece = pieces.find((p) => p.id === firingForPieceId)
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-[#3a2c22] px-4 py-6">
+    <div className="flex min-h-screen flex-col items-center bg-[#e6e5eb] px-4 py-6">
       <header className="mb-6 flex w-full max-w-3xl items-center justify-end">
         <button
           onClick={() => setShowNewPiece(true)}
-          className="rounded-full bg-[#c1583c] px-4 py-2 text-sm font-medium text-white hover:bg-[#a8492f]"
+          className="rounded-full bg-[#f2545b] px-4 py-2 text-sm font-medium text-white hover:bg-[#c73f47]"
         >
           + New piece
         </button>
