@@ -9,15 +9,22 @@ export const BackCoverPage = forwardRef<HTMLDivElement, BackCoverPageProps>(
     return (
       <div
         ref={ref}
-        className="flex h-full w-full flex-col items-center justify-center gap-4 border border-stone-400 bg-gradient-to-br from-stone-700 to-stone-900 p-8 text-center text-stone-50"
+        className="h-full w-full border border-stone-400 bg-[#c6b58e]"
       >
-        <p className="text-sm text-stone-300">End of sketchbook</p>
-        <button
-          onClick={onAddPiece}
-          className="rounded-full bg-stone-50 px-5 py-2 text-sm font-medium text-stone-800 hover:bg-white"
-        >
-          + New piece
-        </button>
+        {/* react-pageflip forces `display:block` inline on the ref'd root,
+            so the flex row layout has to live one level in. */}
+        <div className="flex h-full w-full">
+          <div className="h-full w-8 flex-shrink-0 bg-gradient-to-r from-[#a8492f] to-[#c1583c] sm:w-10" />
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center text-stone-800 sm:p-8">
+            <p className="text-sm text-stone-600">End of sketchbook</p>
+            <button
+              onClick={onAddPiece}
+              className="rounded-full bg-stone-800 px-5 py-2 text-sm font-medium text-white hover:bg-stone-700"
+            >
+              + New piece
+            </button>
+          </div>
+        </div>
       </div>
     )
   },
